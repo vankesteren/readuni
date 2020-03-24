@@ -48,6 +48,28 @@ read_unisens <- function(folder, file_id) {
   return(dat)
 }
 
+#' Read unisens sample properties
+#'
+#' Parses the xml file into a list to extract the attributes (such as starting
+#' timestamp) of the sample.
+#'
+#' @param folder path to the unisens data folder
+#'
+#' @return list of attributes associated with the sample
+#'
+#' @export
+read_props <- function(folder) {
+  folder_files <- list.files(folder)
+  xml_file     <- folder_files[grepl("\\.xml", folder_files)][1]
+  xml <- xml2::xml_ns_strip(xml2::read_xml(file.path(folder, xml_file)))
+  attr_nodes <- xml2::xml_find_all(xml, ".//customAttribute")
+  attrs <- xml2::xml_attr(attr_nodes, "value")
+  names(attrs) <- xml2::xml_attr(attr_nodes, "key")
+
+  return(append(as.list(attrs), as.list(xml2::xml_attrs(xml))))
+}
+
+
 #' Binary reading by block
 #'
 #' @keywords internal
@@ -157,3 +179,5 @@ sub_sample <- function(uni_mat, tgt_rate) {
   attr(dat, "sampleRate") <- tgt_rate
   dat
 }
+
+

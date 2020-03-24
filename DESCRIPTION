@@ -1,7 +1,7 @@
 Package: readuni
 Type: Package
 Title: Read unisens binary data files
-Version: 0.2.0
+Version: 0.3.0
 Author: Erik-Jan van Kesteren
 Maintainer: Erik-Jan van Kesteren <e.vankesteren1@uu.nl>
 Description: Read unisens binary data files with their associated xml into 
