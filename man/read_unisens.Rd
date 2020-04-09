@@ -4,13 +4,16 @@
 \alias{read_unisens}
 \title{Read unisens binary files}
 \usage{
-read_unisens(folder, file_id)
+read_unisens(folder, file_id, post_process = TRUE)
 }
 \arguments{
 \item{folder}{the folder containing the xml file and the .bin file(s)}
 
 \item{file_id}{the filename of the binary file. This should also exist in the
 xml file as an ID. Upon error, a nice warning will be given.}
+
+\item{post_process}{adjust the signal for baseline and range using the
+attributes stored in the unisens xml properties file.}
 }
 \value{
 A unisens data matrix. The named columns of the matrix are the

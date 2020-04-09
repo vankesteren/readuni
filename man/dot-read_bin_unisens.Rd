@@ -4,7 +4,7 @@
 \alias{.read_bin_unisens}
 \title{Binary reading by block}
 \usage{
-.read_bin_unisens(path, attrs)
+.read_bin_unisens(path, attrs, post_process)
 }
 \description{
 Binary reading by block
