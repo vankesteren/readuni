@@ -8,6 +8,8 @@
 #' @param folder the folder containing the xml file and the .bin file(s)
 #' @param file_id the filename of the binary file. This should also exist in the
 #'   xml file as an ID. Upon error, a nice warning will be given.
+#' @param post_process adjust the signal for baseline and range using the
+#'   attributes stored in the unisens xml properties file.
 #'
 #' @return A unisens data matrix. The named columns of the matrix are the
 #'   different channels, and the rows of the matrix are the samples. The
@@ -20,7 +22,7 @@
 #' @seealso \code{\link{sample_rate}}, \code{\link{sub_sample}}
 #'
 #' @export
-read_unisens <- function(folder, file_id) {
+read_unisens <- function(folder, file_id, post_process = TRUE) {
   folder_files <- list.files(folder)
   xml_file     <- folder_files[grepl("\\.xml", folder_files)][1]
   xml <- xml2::xml_ns_strip(xml2::read_xml(file.path(folder, xml_file)))
@@ -43,7 +45,8 @@ read_unisens <- function(folder, file_id) {
   attrs$channels <-  xml2::xml_attr(xml2::xml_find_all(node, "channel"), "name")
 
   # actually read in block-wise manner with R
-  dat <- .read_bin_unisens(file.path(folder, file_id), attrs = attrs)
+  dat <- .read_bin_unisens(path = file.path(folder, file_id), attrs = attrs,
+                           post_process = post_process)
   attributes(dat) <- append(attributes(dat), attrs)
   return(dat)
 }
@@ -73,7 +76,7 @@ read_props <- function(folder) {
 #' Binary reading by block
 #'
 #' @keywords internal
-.read_bin_unisens <- function(path, attrs) {
+.read_bin_unisens <- function(path, attrs, post_process) {
   if (attrs$dataType == "int16") {
     rbSize <- 2
   } else if (attrs$dataType == "int32") {
@@ -137,7 +140,7 @@ read_props <- function(folder) {
   baseline <- as.numeric(attrs$baseline)
   if (length(baseline) == 0) baseline <- 0
 
-  if (baseline != 0 || lsb != 1) {
+  if (post_process && (baseline != 0 || lsb != 1)) {
     if (interactive()) message("Adjusting baseline and range...")
     vec <- (vec - baseline) * lsb
   }
